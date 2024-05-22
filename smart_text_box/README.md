@@ -1,4 +1,4 @@
-# smart_text_box
+# SMART TEXT BOX
 
 この JavaScript モジュールは、入力ボックスに対してキーワードの候補をサジェストする機能を提供します。ローカルの TSV ファイルから取得したデータや、必要に応じて外部 API から取得したデータに基づいてキーワードをサジェストします。サジェストされたキーワードは、入力ボックスの下にドロップダウンで表示され、ユーザーが選択できるようになります。
 
@@ -169,4 +169,34 @@ smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
   api_url: 'https://api.example.com/keywords',
   includeNoMatch: true,
 });
+```
+
+#### もしかして検索（API）のレスポンス
+
+もしかして検索の API は、以下のような形式でレスポンスを返すことを想定しています。
+
+```javascript
+[
+  {
+    ID: 'D1',
+    label_en: 'Disease A',
+    synonym_en: 'Alternative name for Disease A',
+    label_ja: '病気A',
+    synonym_ja: '病気Aの別名',
+  },
+  {
+    ID: 'D2',
+    label_en: 'Disease B',
+    synonym_en: 'Alternative name for Disease B',
+    label_ja: '病気B',
+    synonym_ja: '病気Bの別名',
+  },
+  {
+    ID: 'D3',
+    label_en: 'Disease C',
+    synonym_en: 'Alternative name for Disease C',
+    label_ja: '病気C',
+    synonym_ja: '病気Cの別名',
+  },
+];
 ```
