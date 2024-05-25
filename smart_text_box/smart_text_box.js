@@ -369,16 +369,11 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @returns {Array} - The array of parsed keyword objects.
    */
   function parseTSVData(tsvData) {
-    const lines = tsvData.split('\n');
-    const headers = lines[0].split('\t');
-    return lines.slice(1).map((line) => {
-      const values = line.split('\t');
-      const entry = {};
-      headers.forEach((header, index) => {
-        entry[header] = values[index];
-      });
-      return entry;
-    });
+    return Papa.parse(tsvData, {
+      columns: true,
+      delimiter: "\t",
+      header: true,
+    }).data;
   }
 
   /**
