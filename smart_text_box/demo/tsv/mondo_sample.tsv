@@ -1,6 +1,6 @@
 ID	label_en	synonym_en	label_ja	synonym_ja
 MONDO:0000004	adrenocortical insufficiency	adrenal cortical hypofunction | adrenal cortical insufficiency | adrenal gland insufficiency | adrenal insufficiency | corticoadrenal insufficiency | hypocortisolemia | hypocortisolism	副腎皮質機能低下症	副腎皮質機能不全 | 副腎皮質機能低下
-MONDO:0000005	alopecia, isolated		脱毛症, 孤立性	
+MONDO:0000005	"alopecia, isolated"		"脱毛症, 孤立性"	
 MONDO:0000009	inherited bleeding disorder, platelet-type		遺伝性出血性障害, 血小板型	先天性出血性障害, 血小板型 | 遺伝性出血性疾患, 血小板型
 MONDO:0000014	colorblindness, partial		色盲, 部分	
 MONDO:0000015	classic complement early component deficiency		古典的補体早期成分欠損症	
