@@ -251,7 +251,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
     return fromAPI
       ? lang === 'ja'
         ? `ヒット件数 [0] <span class="suggestion-hint">もしかして:</span>`
-        : `Number of hits [0] <span class="suggestion-hint">By any chance:</span>`
+        : `Number of hits [0] <span class="suggestion-hint">Did you mean:</span>`
       : lang === 'ja'
       ? `ヒット件数 [${hitCount}]`
       : `Number of hits [${hitCount}]`;
@@ -371,7 +371,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   function parseTSVData(tsvData) {
     return Papa.parse(tsvData, {
       columns: true,
-      delimiter: "\t",
+      delimiter: '\t',
       header: true,
     }).data;
   }
