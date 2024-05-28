@@ -165,7 +165,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   function displayResults(results, fromAPI = false) {
     let hitCount = fromAPI ? 0 : results.length;
     let suggestionsHtml = '';
-    const isEng = isEnglish(currentKeywords.join(' '));
+    const isEng = lang === 'ja' ? false : true;
 
     if (includeNoMatch) {
       suggestionsHtml += createKeywordSuggestion();
@@ -196,14 +196,18 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @returns {string} - The HTML string for the keyword suggestion item.
    */
   function createKeywordSuggestion() {
+    const keyword = currentKeywords.join(' ');
+    const displayText =
+      lang === 'ja'
+        ? `"${keyword}"をテキスト入力（IDなし）`
+        : `Text input "${keyword}" (no ID)`;
+
     return `
-      <li class="suggestion-item -keyword" data-id="noMatch" data-label-en="" data-label-ja="${currentKeywords.join(
-        ' '
-      )}">
-        <div class="label-container">
-          <span class="main-name">${currentKeywords.join(' ')}</span>
-        </div>
-      </li>`;
+    <li class="suggestion-item -keyword" data-id="noMatch" data-label-en="" data-label-ja="${keyword}">
+      <div class="label-container">
+        <span class="main-name">${displayText}</span>
+      </div>
+    </li>`;
   }
 
   /**
