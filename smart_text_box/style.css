@@ -29,7 +29,7 @@
   border-radius: 0 0 5px 5px;
   z-index: 9999;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0);
-  max-height: 90vh;
+  max-height: 50vh;
   overflow: auto;
 }
 .smart-text-box-container > .suggest-box > .hit-count {
