@@ -29,7 +29,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   let suggestBoxContainer = document.getElementById(
     `${input_box_id}_suggestBox`
   );
-
+  let localResults = [];
+  let apiResults = [];
   const lang = document.documentElement.lang;
 
   if (!suggestBoxContainer) {
@@ -132,6 +133,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * Handles input events from the input element, normalizes the input value, and displays keyword suggestions.
    * @param {Event} event - The input event.
    */
+
   function handleInput(event) {
     originalInputValue = event.target.value;
     const searchValue = normalizeString(event.target.value);
@@ -142,18 +144,19 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
     }
 
     currentKeywords = searchValue.split(/\s+/);
-    let results = searchInLocalData(diseases, currentKeywords);
+    localResults = searchInLocalData(diseases, currentKeywords);
 
-    if (results.length === 0 && api_url) {
-      fetchFromAPI(searchValue).then((apiResults) => {
-        if (apiResults.length === 0 && includeNoMatch) {
+    if (localResults.length === 0 && api_url) {
+      fetchFromAPI(searchValue).then((results) => {
+        if (results.length === 0 && includeNoMatch) {
           displayResults([], true);
         } else {
-          displayResults(apiResults, true);
+          apiResults = results;
+          displayResults(results, true);
         }
       });
     } else {
-      displayResults(results);
+      displayResults(localResults);
     }
   }
 
@@ -165,7 +168,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   function displayResults(results, fromAPI = false) {
     let hitCount = fromAPI ? 0 : results.length;
     let suggestionsHtml = '';
-    const isEng = lang === 'ja' ? false : true;
+    const isEng = isEnglish(currentKeywords.join(' '));
 
     if (includeNoMatch) {
       suggestionsHtml += createKeywordSuggestion();
@@ -203,7 +206,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
         : `Text input "${keyword}" (no ID)`;
 
     return `
-    <li class="suggestion-item -keyword" data-id="noMatch" data-label-en="" data-label-ja="${keyword}">
+    <li class="suggestion-item -keyword" data-id="noMatch">
       <div class="label-container">
         <span class="main-name">${displayText}</span>
       </div>
@@ -230,9 +233,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
     return `
       <li class="suggestion-item ${
         index === 0 && !suggestionsHtml ? '-selected' : ''
-      }" data-id="${disease.ID}" data-label-en="${
-      disease.label_en
-    }" data-label-ja="${disease.label_ja}">
+      }" data-id="${disease.ID}">
         <span class="label-id">${highlightedID}</span>
         <div class="label-container">
           <span class="main-name">${highlightedLabel}</span>
@@ -352,12 +353,29 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
       }
       function handleClick() {
         const isNoMatch = item.getAttribute('data-id') === 'noMatch';
-        const labelInfo = {
-          ID: isNoMatch ? '' : item.getAttribute('data-id'),
-          label_en: isNoMatch ? '' : item.getAttribute('data-label-en'),
-          label_ja: isNoMatch ? '' : item.getAttribute('data-label-ja'),
-          keyword: originalInputValue,
-        };
+        let labelInfo;
+        if (isNoMatch) {
+          labelInfo = {
+            ID: '',
+            label_en: '',
+            label_ja: '',
+            keyword: originalInputValue,
+          };
+        } else {
+          const itemId = item.getAttribute('data-id');
+          const diseaseInfo =
+            localResults.length === 0
+              ? apiResults.find((disease) => disease.ID === itemId)
+              : diseases.find((disease) => disease.ID === itemId);
+
+          const { synonym_en, synonym_ja, ...restDiseaseInfo } = diseaseInfo;
+
+          labelInfo = {
+            ...restDiseaseInfo,
+            keyword: originalInputValue,
+          };
+        }
+
         const customEvent = new CustomEvent('selectedLabel', {
           detail: { inputBoxId: input_box_id, labelInfo: labelInfo },
         });
@@ -447,15 +465,6 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
         }
         return response.json();
       })
-      .then((data) =>
-        data.map((disease) => ({
-          ID: disease.ID,
-          label_ja: disease.label_ja,
-          synonym_ja: disease.synonym_ja,
-          label_en: disease.label_en,
-          synonym_en: disease.synonym_en,
-        }))
-      )
       .catch((error) => {
         console.error('Error fetching from API:', error);
         return [];
