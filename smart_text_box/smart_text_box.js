@@ -53,9 +53,6 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   /**
    * Adds event listeners to the input element for handling user input, keyboard navigation, and clicks outside the suggestion box.
    */
-  /**
-   * Adds event listeners to the input element for handling user input, keyboard navigation, and clicks outside the suggestion box.
-   */
   function addEventListeners() {
     inputElement.addEventListener('input', debounce(handleInput, 300));
     inputElement.addEventListener('keydown', handleKeyboardNavigation);
@@ -230,6 +227,14 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
       ? highlightMatch(synonyms, currentKeywords)
       : '';
 
+    const matchedSynonyms = highlightedSynonyms
+      .split('|')
+      .filter((synonym) =>
+        currentKeywords.some((keyword) =>
+          normalizeString(synonym).includes(keyword)
+        )
+      );
+
     return `
       <li class="suggestion-item ${
         index === 0 && !suggestionsHtml ? '-selected' : ''
@@ -238,8 +243,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
         <div class="label-container">
           <span class="main-name">${highlightedLabel}</span>
           ${
-            highlightedSynonyms
-              ? `<span class="synonyms">| ${highlightedSynonyms}</span>`
+            matchedSynonyms.length > 0
+              ? `<span class="synonyms">| ${matchedSynonyms.join(' | ')}</span>`
               : ''
           }
         </div>
