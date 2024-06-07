@@ -53,9 +53,6 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   /**
    * Adds event listeners to the input element for handling user input, keyboard navigation, and clicks outside the suggestion box.
    */
-  /**
-   * Adds event listeners to the input element for handling user input, keyboard navigation, and clicks outside the suggestion box.
-   */
   function addEventListeners() {
     inputElement.addEventListener('input', debounce(handleInput, 300));
     inputElement.addEventListener('keydown', handleKeyboardNavigation);
@@ -133,17 +130,18 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * Handles input events from the input element, normalizes the input value, and displays keyword suggestions.
    * @param {Event} event - The input event.
    */
-
   function handleInput(event) {
     originalInputValue = event.target.value;
-    const searchValue = normalizeString(event.target.value);
+    const searchValue = normalizeString(event.target.value.trim());
 
-    if (searchValue.trim().length < 2) {
+    if (searchValue.length < 2) {
       clearSuggestBox();
       return;
     }
 
-    currentKeywords = searchValue.split(/\s+/);
+    currentKeywords = searchValue
+      .split(/\s+/)
+      .filter((keyword) => keyword !== '');
     localResults = searchInLocalData(diseases, currentKeywords);
 
     if (localResults.length === 0 && api_url) {
@@ -230,20 +228,28 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
       ? highlightMatch(synonyms, currentKeywords)
       : '';
 
+    const matchedSynonyms = highlightedSynonyms
+      .split('|')
+      .filter((synonym) =>
+        currentKeywords.some((keyword) =>
+          normalizeString(synonym).includes(keyword)
+        )
+      );
+
     return `
-      <li class="suggestion-item ${
-        index === 0 && !suggestionsHtml ? '-selected' : ''
-      }" data-id="${disease.ID}">
-        <span class="label-id">${highlightedID}</span>
-        <div class="label-container">
-          <span class="main-name">${highlightedLabel}</span>
-          ${
-            highlightedSynonyms
-              ? `<span class="synonyms">| ${highlightedSynonyms}</span>`
-              : ''
-          }
-        </div>
-      </li>`;
+    <li class="suggestion-item ${
+      index === 0 && !suggestionsHtml ? '-selected' : ''
+    }" data-id="${disease.ID}">
+      <span class="label-id">${highlightedID}</span>
+      <div class="label-container">
+        <span class="main-name">${highlightedLabel}</span>
+        ${
+          matchedSynonyms.length > 0
+            ? `<span class="synonyms">| ${matchedSynonyms.join(' | ')}</span>`
+            : ''
+        }
+      </div>
+    </li>`;
   }
 
   /**
@@ -276,8 +282,10 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
       return [keyword, fullwidthKeyword];
     });
 
+    const filteredKeywords = allWidthKeywords.filter((kw) => kw.trim() !== '');
+
     const allWidthRegex = new RegExp(
-      `(${allWidthKeywords
+      `(${filteredKeywords
         .map((keyword) => keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'))
         .join('|')})`,
       'gi'
