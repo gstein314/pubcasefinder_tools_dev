@@ -31,3 +31,17 @@ document.addEventListener('selectedLabel', function (event) {
       console.error('Unknown input box ID:', inputBoxId);
   }
 });
+
+// デモ用
+window.switchLanguage = function (lang) {
+  const htmlElement = document.documentElement;
+  htmlElement.lang = lang;
+
+  document.querySelectorAll('.language-option').forEach((option) => {
+    option.classList.remove('selected-language');
+  });
+
+  document.getElementById(`lang-${lang}`).classList.add('selected-language');
+};
+
+switchLanguage('ja');

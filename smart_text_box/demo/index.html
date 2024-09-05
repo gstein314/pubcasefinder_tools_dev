@@ -5,16 +5,43 @@
   <meta charset="UTF-8">
   <title>Smart Text Box Demo</title>
   <link rel="stylesheet" href="../style.css">
+  <style>
+    /* デモ用スタイル */
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .selected-language {
+      display: inline-block;
+      border: 2px solid red;
+      border-radius: 50%;
+      padding: 5px 10px;
+      margin: 0 5px;
+    }
+
+    .language-option {
+      cursor: pointer;
+      padding: 5px 10px;
+      margin: 0 5px;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Smart Text Box Demo</h1>
+
+  <div>
+    <label>Switch Language:</label>
+    <span id="lang-ja" class="language-option selected-language" onclick="switchLanguage('ja')">JA</span>
+    <span id="lang-en" class="language-option" onclick="switchLanguage('en')">EN</span>
+  </div>
+
   <h2>NANDO</h2>
   <div class="smart-text-box-container">
     <input type="text" id="NANDO" class="smart-text-box-input" autocomplete="off" placeholder="Search NANDO...">
   </div>
 
-  <h2>OMIM/Oprphanet</h2>
+  <h2>OMIM/Orphanet</h2>
   <div class="smart-text-box-container">
     <input type="text" id="MONDO" class="smart-text-box-input" autocomplete="off" placeholder="Search MONDO...">
   </div>
