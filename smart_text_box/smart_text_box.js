@@ -249,7 +249,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   function createSuggestionItem(disease, index, isEng, suggestionsHtml) {
     const mainLabel = isEng ? disease.label_en : disease.label_ja;
     const synonyms = isEng ? disease.synonym_en : disease.synonym_ja;
-    const highlightedID = highlightMatch(disease.ID, currentKeywords);
+    const highlightedID = highlightMatch(disease.id, currentKeywords);
     const highlightedLabel = highlightMatch(mainLabel, currentKeywords);
     const highlightedSynonyms = synonyms
       ? highlightMatch(synonyms, currentKeywords)
@@ -266,7 +266,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
     return `
     <li class="suggestion-item ${
       index === 0 && !suggestionsHtml ? '-selected' : ''
-    }" data-id="${disease.ID}">
+    }" data-id="${disease.id}">
       <span class="label-id">${highlightedID}</span>
       <div class="label-container">
         <span class="main-name">${highlightedLabel}</span>
@@ -392,7 +392,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
         let labelInfo;
         if (isNoMatch) {
           labelInfo = {
-            ID: '',
+            id: '',
             label_en: '',
             label_ja: '',
             keyword: originalInputValue,
@@ -401,8 +401,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
           const itemId = item.getAttribute('data-id');
           const diseaseInfo =
             localResults.length === 0
-              ? apiResults.find((disease) => disease.ID === itemId)
-              : diseases.find((disease) => disease.ID === itemId);
+              ? apiResults.find((disease) => disease.id === itemId)
+              : diseases.find((disease) => disease.id === itemId);
 
           const { synonym_en, synonym_ja, ...restDiseaseInfo } = diseaseInfo;
 
@@ -477,8 +477,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
         const lowerKeyword = normalizeString(keyword);
         if (isEng) {
           return (
-            (disease.ID &&
-              normalizeString(disease.ID).includes(lowerKeyword)) ||
+            (disease.id &&
+              normalizeString(disease.id).includes(lowerKeyword)) ||
             (disease.label_en &&
               normalizeString(disease.label_en).includes(lowerKeyword)) ||
             (disease.synonym_en &&
@@ -486,8 +486,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
           );
         } else {
           return (
-            (disease.ID &&
-              normalizeString(disease.ID).includes(lowerKeyword)) ||
+            (disease.id &&
+              normalizeString(disease.id).includes(lowerKeyword)) ||
             (disease.label_ja &&
               normalizeString(disease.label_ja).includes(lowerKeyword)) ||
             (disease.synonym_ja &&

@@ -61,10 +61,10 @@ css は scss で管理しています。Smart Text Box 共通部分に関わる�
 
 ### JavaScript
 
-TSVのパースに PapaParse を使用しています。HTML ファイルに以下のコードを追加してください。
+TSV のパースに PapaParse を使用しています。HTML ファイルに以下のコードを追加してください。
 
 ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 ```
 
 smart_text_box.js ファイルをコピーして追加してください。利用したい js ファイルで以下のように呼び出してください。パスは適宜変更してください。
@@ -90,7 +90,7 @@ document.addEventListener('selectedLabel', function (event) {
 TSV ファイルは以下のような構成にしてください。
 
 ```tsv
-ID label_en synonym_en label_ja synonym_ja
+id label_en synonym_en label_ja synonym_ja
 ```
 
 ## smart_text_box.js の詳細
@@ -184,21 +184,21 @@ smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
 ```javascript
 [
   {
-    ID: 'D1',
+    id: 'D1',
     label_en: 'Disease A',
     synonym_en: 'Alternative name for Disease A',
     label_ja: '病気A',
     synonym_ja: '病気Aの別名',
   },
   {
-    ID: 'D2',
+    id: 'D2',
     label_en: 'Disease B',
     synonym_en: 'Alternative name for Disease B',
     label_ja: '病気B',
     synonym_ja: '病気Bの別名',
   },
   {
-    ID: 'D3',
+    id: 'D3',
     label_en: 'Disease C',
     synonym_en: 'Alternative name for Disease C',
     label_ja: '病気C',
