@@ -31,8 +31,6 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   );
   let localResults = [];
   let apiResults = [];
-  const lang = document.documentElement.lang;
-
   if (!suggestBoxContainer) {
     suggestBoxContainer = createSuggestBoxContainer(inputElement);
   }
@@ -131,8 +129,15 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @param {Event} event - The input event.
    */
   function handleInput(event) {
+    const lang = document.documentElement.lang;
+
     originalInputValue = event.target.value;
     const searchValue = normalizeString(event.target.value.trim());
+    if (/^\d+$/.test(searchValue)) {
+      console.log(
+        `Current language is ${lang}. Input is numeric: ${searchValue}`
+      );
+    }
 
     if (searchValue.length < 2) {
       clearSuggestBox();
@@ -197,6 +202,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @returns {string} - The HTML string for the keyword suggestion item.
    */
   function createKeywordSuggestion() {
+    const lang = document.documentElement.lang;
     const keyword = currentKeywords.join(' ');
     const displayText =
       lang === 'ja'
@@ -259,6 +265,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @returns {string} - The HTML string for the hit count text.
    */
   function createHitCountText(fromAPI, hitCount) {
+    const lang = document.documentElement.lang;
     return fromAPI
       ? lang === 'ja'
         ? `ヒット件数 [0] <span class="suggestion-hint">もしかして:</span>`
