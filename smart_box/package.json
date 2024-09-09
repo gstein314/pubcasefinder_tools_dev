@@ -1,8 +1,8 @@
 {
-  "name": "smart_text_box",
+  "name": "smart_box",
   "version": "1.0.0",
-  "description": "Smart Text Box",
-  "main": "smart_text_box.js",
+  "description": "Smart Box",
+  "main": "smart_box.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

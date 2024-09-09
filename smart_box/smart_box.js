@@ -7,14 +7,14 @@
  * @param {string} [options.api_url=''] - The URL of the API to fetch additional keyword suggestions (optional).
  * @param {boolean} [options.includeNoMatch=false] - Whether to include a selection field for the keyword itself in the suggestion box (optional).
  */
-export function smartTextBox(input_box_id, data_path, options = {}) {
+export function smartBox(input_box_id, data_path, options = {}) {
   if (!input_box_id) {
-    console.error('Error in smartTextBox: Input box id is required.');
+    console.error('Error in smartBox: Input box id is required.');
     return;
   }
 
   if (!data_path) {
-    console.error('Error in smartTextBox: TSV file path is required.');
+    console.error('Error in smartBox: TSV file path is required.');
     return;
   }
 
