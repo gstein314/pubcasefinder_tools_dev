@@ -54,12 +54,25 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   function addEventListeners() {
     inputElement.addEventListener('input', debounce(handleInput, 300));
     inputElement.addEventListener('keydown', handleKeyboardNavigation);
+
+    inputElement.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !isComposing) {
+        event.preventDefault();
+        if (suggestBoxContainer.style.display === 'block') {
+          const items =
+            suggestBoxContainer.querySelectorAll('.suggestion-item');
+          if (selectedIndex >= 0 && items[selectedIndex]) {
+            items[selectedIndex].click();
+          }
+        }
+      }
+    });
+
     inputElement.addEventListener('compositionstart', () => {
       isComposing = true;
     });
     inputElement.addEventListener('compositionend', () => {
       isComposing = false;
-      handleInput();
     });
     inputElement.addEventListener('focus', handleFocus);
     document.addEventListener('click', handleClickOutside);
