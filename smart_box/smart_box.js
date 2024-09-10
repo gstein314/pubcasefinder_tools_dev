@@ -52,11 +52,30 @@ export function smartBox(input_box_id, data_path, options = {}) {
    * Adds event listeners to the input element for handling user input, keyboard navigation, and clicks outside the suggestion box.
    */
   function addEventListeners() {
-    inputElement.addEventListener('input', debounce(handleInput, 300));
-    inputElement.addEventListener('keydown', handleKeyboardNavigation);
+    let isEnterKeyForConversion = false;
+    let lastKeyWasEnter = false;
+
+    inputElement.addEventListener(
+      'input',
+      debounce((event) => {
+        if (
+          !isComposing &&
+          !isEnterKeyForConversion &&
+          event.target.value.trim() !== ''
+        ) {
+          handleInput(event);
+        }
+      }, 300)
+    );
 
     inputElement.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && !isComposing) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        handleKeyboardNavigation(event);
+      } else if (
+        event.key === 'Enter' &&
+        !isComposing &&
+        !isEnterKeyForConversion
+      ) {
         event.preventDefault();
         if (suggestBoxContainer.style.display === 'block') {
           const items =
@@ -65,17 +84,52 @@ export function smartBox(input_box_id, data_path, options = {}) {
             items[selectedIndex].click();
           }
         }
+      } else if (event.key === ' ') {
+        clearSuggestBox();
+      }
+
+      if (event.key === 'Enter') {
+        lastKeyWasEnter = true;
+      }
+    });
+
+    inputElement.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        lastKeyWasEnter = false;
       }
     });
 
     inputElement.addEventListener('compositionstart', () => {
       isComposing = true;
+      isEnterKeyForConversion = true;
     });
+
     inputElement.addEventListener('compositionend', () => {
       isComposing = false;
+      setTimeout(() => {
+        isEnterKeyForConversion = false;
+        if (
+          inputElement.value.trim() !== '' &&
+          !isFullWidthNumeric(inputElement.value) &&
+          !lastKeyWasEnter
+        ) {
+          handleInput();
+        }
+      }, 200);
     });
+
     inputElement.addEventListener('focus', handleFocus);
     document.addEventListener('click', handleClickOutside);
+  }
+
+  /**
+   * Checks if the input string contains only full-width numeric characters.
+   * @param {string} value - The input value to check.
+   * @returns {boolean} - True if the input contains only full-width numeric characters, false otherwise.
+   */
+  function isFullWidthNumeric(value) {
+    const fullWidthNumericPattern = /^[０-９]+$/;
+    return fullWidthNumericPattern.test(value);
   }
 
   /**
