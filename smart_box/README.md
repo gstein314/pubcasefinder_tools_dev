@@ -1,4 +1,4 @@
-# SMART TEXT BOX
+# SMART BOX
 
 この JavaScript モジュールは、入力ボックスに対してキーワードの候補をサジェストする機能を提供します。ローカルの TSV ファイルから取得したデータや、必要に応じて外部 API から取得したデータに基づいてキーワードをサジェストします。サジェストされたキーワードは、入力ボックスの下にドロップダウンで表示され、ユーザーが選択できるようになります。
 
@@ -6,15 +6,15 @@
 
 ### 起動手順
 
-1. demo/js/main.js で smartTextBox 関数を呼び出し、Input 要素の ID、TSV ファイルのパス、オプションを引数として渡しています。（確認するだけであれば、デモ用のファイルをそのまま使用してください。）
+1. demo/js/main.js で smartBox 関数を呼び出し、Input 要素の ID、TSV ファイルのパス、オプションを引数として渡しています。（確認するだけであれば、デモ用のファイルをそのまま使用してください。）
 
 以下のコマンドをターミナルで入力してディレクトリを移動してください。
 
 ```sh
-cd smart_text_box
+cd smart_box
 ```
 
-#### smartTextBox の引数
+#### smartBox の引数
 
 - `input_box_id`: 入力ボックス要素の ID。必須です。
 - `data_path`: TSV ファイルのパス。必須です。
@@ -32,7 +32,7 @@ npm install
 node demo/js/server.js
 ```
 
-3. VSCode の拡張機能である Live Server を起動してください。その後、http://127.0.0.1:5500/smart_text_box/demo/ を開いてください。
+3. VSCode の拡張機能である Live Server を起動してください。その後、http://127.0.0.1:5500/smart_box/demo/ を開いてください。
 
 ## 他プロジェクトでの使い方
 
@@ -40,14 +40,14 @@ node demo/js/server.js
 
 ### HTML
 
-html ファイルに以下のようなコードを記述し、input 要素は div 要素（class="smart-text-box-container"）で囲むようにしてください。また、id は任意のものを指定してください。
+html ファイルに以下のようなコードを記述し、input 要素は div 要素（class="smart-box-container"）で囲むようにしてください。また、id は任意のものを指定してください。
 
 ```html
-<div class="smart-text-box-container">
+<div class="smart-box-container">
   <input
     type="text"
     id="inputBoxID"
-    class="smart-text-box-input"
+    class="smart-box-input"
     autocomplete="off"
     placeholder="Search..."
   />
@@ -61,20 +61,20 @@ css は scss で管理しています。Smart Text Box 共通部分に関わる�
 
 ### JavaScript
 
-TSVのパースに PapaParse を使用しています。HTML ファイルに以下のコードを追加してください。
+TSV のパースに PapaParse を使用しています。HTML ファイルに以下のコードを追加してください。
 
 ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 ```
 
-smart_text_box.js ファイルをコピーして追加してください。利用したい js ファイルで以下のように呼び出してください。パスは適宜変更してください。
+smart_box.js ファイルをコピーして追加してください。利用したい js ファイルで以下のように呼び出してください。パスは適宜変更してください。
 
 ```javascript
-// smart_text_box.js のインポート
-import { smartTextBox } from './smart_text_box.js';
+// smart_box.js のインポート
+import { smartBox } from './smart_box.js';
 
 // 関数の呼び出し
-smartTextBox('inputBoxID', 'path/to/keywords.tsv');
+smartBox('inputBoxID', 'path/to/keywords.tsv');
 
 // カスタムイベントのリスナー（インプットボックスのIDと選択したラベル情報のオブジェクトを取得し、Consoleに表示する例）
 document.addEventListener('selectedLabel', function (event) {
@@ -90,10 +90,10 @@ document.addEventListener('selectedLabel', function (event) {
 TSV ファイルは以下のような構成にしてください。
 
 ```tsv
-ID label_en synonym_en label_ja synonym_ja
+id label_en synonym_en label_ja synonym_ja
 ```
 
-## smart_text_box.js の詳細
+## smart_box.js の詳細
 
 ### 概要
 
@@ -101,7 +101,7 @@ ID label_en synonym_en label_ja synonym_ja
 
 #### 関数の説明
 
-##### smartTextBox
+##### smartBox
 
 目的: ユーザーの入力に基づいてキーワードの候補をサジェストします。
 
@@ -144,18 +144,18 @@ includeNoMatch (boolean): キーワード自体の選択欄をサジェストボ
 
 #### 使用例
 
-以下のように、smartTextBox 関数を呼び出して使用します。
+以下のように、smartBox 関数を呼び出して使用します。
 
 1. ローカルデータだけ使用する場合
 
 ```javascript
-smartTextBox('inputBoxID', 'path/to/keywords.tsv');
+smartBox('inputBoxID', 'path/to/keywords.tsv');
 ```
 
 2. もしかして検索を使用（ローカルデータがヒットしないとき）する場合
 
 ```javascript
-smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
+smartBox('inputBoxID', 'path/to/keywords.tsv', {
   api_url: 'https://api.example.com/keywords',
 });
 ```
@@ -163,7 +163,7 @@ smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
 3. キーワード自体の選択欄を表示する場合
 
 ```javascript
-smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
+smartBox('inputBoxID', 'path/to/keywords.tsv', {
   includeNoMatch: true,
 });
 ```
@@ -171,7 +171,7 @@ smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
 4. もしかして検索とキーワード自体の選択欄を表示する場合
 
 ```javascript
-smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
+smartBox('inputBoxID', 'path/to/keywords.tsv', {
   api_url: 'https://api.example.com/keywords',
   includeNoMatch: true,
 });
@@ -184,21 +184,21 @@ smartTextBox('inputBoxID', 'path/to/keywords.tsv', {
 ```javascript
 [
   {
-    ID: 'D1',
+    id: 'D1',
     label_en: 'Disease A',
     synonym_en: 'Alternative name for Disease A',
     label_ja: '病気A',
     synonym_ja: '病気Aの別名',
   },
   {
-    ID: 'D2',
+    id: 'D2',
     label_en: 'Disease B',
     synonym_en: 'Alternative name for Disease B',
     label_ja: '病気B',
     synonym_ja: '病気Bの別名',
   },
   {
-    ID: 'D3',
+    id: 'D3',
     label_en: 'Disease C',
     synonym_en: 'Alternative name for Disease C',
     label_ja: '病気C',

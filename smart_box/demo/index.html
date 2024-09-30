@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Box Demo</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* デモ用スタイル */
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .selected-language {
+      display: inline-block;
+      border: 2px solid red;
+      border-radius: 50%;
+      padding: 5px 10px;
+      margin: 0 5px;
+    }
+
+    .language-option {
+      cursor: pointer;
+      padding: 5px 10px;
+      margin: 0 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Smart Box Demo</h1>
+
+  <div>
+    <label>Switch Language:</label>
+    <span id="lang-ja" class="language-option selected-language" onclick="switchLanguage('ja')">JA</span>
+    <span id="lang-en" class="language-option" onclick="switchLanguage('en')">EN</span>
+  </div>
+
+  <h2>NANDO</h2>
+  <div class="smart-box-container">
+    <input type="text" id="NANDO" class="smart-box-input" autocomplete="off" placeholder="Search NANDO...">
+  </div>
+
+  <h2>OMIM/Orphanet</h2>
+  <div class="smart-box-container">
+    <input type="text" id="MONDO" class="smart-box-input" autocomplete="off" placeholder="Search MONDO...">
+  </div>
+
+  <h2>ICD-10</h2>
+  <div class="smart-box-container">
+    <input type="text" id="ICD10" class="smart-box-input" autocomplete="off" placeholder="Search ICD-10...">
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

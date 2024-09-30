@@ -1,18 +1,18 @@
-import { smartTextBox } from '../../smart_text_box.js';
+import { smartBox } from '../../smart_box.js';
 
 // API（もしかして検索）あり、キーワード選択欄なし
-smartTextBox('NANDO', './tsv/NANDO_sample.tsv', {
+smartBox('NANDO', './tsv/NANDO_sample.tsv', {
   api_url: 'http://localhost:5555/moshikashite_test_api?text=',
 });
 
 // API（もしかして検索）あり、キーワード選択欄あり
-smartTextBox('MONDO', './tsv/mondo_sample.tsv', {
+smartBox('MONDO', './tsv/mondo_sample.tsv', {
   api_url: 'http://localhost:5555/moshikashite_test_api?text=',
   includeNoMatch: true,
 });
 
 // API（もしかして検索）なし、キーワード選択欄なし
-smartTextBox('ICD10', './tsv/icd10_sample.tsv');
+smartBox('ICD10', './tsv/icd10_sample.tsv');
 
 document.addEventListener('selectedLabel', function (event) {
   const inputBoxId = event.detail.inputBoxId;
@@ -31,3 +31,17 @@ document.addEventListener('selectedLabel', function (event) {
       console.error('Unknown input box ID:', inputBoxId);
   }
 });
+
+// デモ用
+window.switchLanguage = function (lang) {
+  const htmlElement = document.documentElement;
+  htmlElement.lang = lang;
+
+  document.querySelectorAll('.language-option').forEach((option) => {
+    option.classList.remove('selected-language');
+  });
+
+  document.getElementById(`lang-${lang}`).classList.add('selected-language');
+};
+
+switchLanguage('ja');

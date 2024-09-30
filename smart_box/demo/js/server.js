@@ -1,27 +1,30 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 5555;
+
+app.use(cors());
 
 /**
  * Sample data
  */
 const sampleData = [
   {
-    ID: 'D1',
+    id: 'D1',
     label_en: 'Disease A',
     synonym_en: 'Alternative name for Disease A',
     label_ja: '病気A',
     synonym_ja: '病気Aの別名',
   },
   {
-    ID: 'D2',
+    id: 'D2',
     label_en: 'Disease B',
     synonym_en: 'Alternative name for Disease B',
     label_ja: '病気B',
     synonym_ja: '病気Bの別名',
   },
   {
-    ID: 'D3',
+    id: 'D3',
     label_en: 'Disease C',
     synonym_en: 'Alternative name for Disease C',
     label_ja: '病気C',

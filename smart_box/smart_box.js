@@ -7,14 +7,14 @@
  * @param {string} [options.api_url=''] - The URL of the API to fetch additional keyword suggestions (optional).
  * @param {boolean} [options.includeNoMatch=false] - Whether to include a selection field for the keyword itself in the suggestion box (optional).
  */
-export function smartTextBox(input_box_id, data_path, options = {}) {
+export function smartBox(input_box_id, data_path, options = {}) {
   if (!input_box_id) {
-    console.error('Error in smartTextBox: Input box id is required.');
+    console.error('Error in smartBox: Input box id is required.');
     return;
   }
 
   if (!data_path) {
-    console.error('Error in smartTextBox: TSV file path is required.');
+    console.error('Error in smartBox: TSV file path is required.');
     return;
   }
 
@@ -31,8 +31,6 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   );
   let localResults = [];
   let apiResults = [];
-  const lang = document.documentElement.lang;
-
   if (!suggestBoxContainer) {
     suggestBoxContainer = createSuggestBoxContainer(inputElement);
   }
@@ -54,16 +52,84 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * Adds event listeners to the input element for handling user input, keyboard navigation, and clicks outside the suggestion box.
    */
   function addEventListeners() {
-    inputElement.addEventListener('input', debounce(handleInput, 300));
-    inputElement.addEventListener('keydown', handleKeyboardNavigation);
+    let isEnterKeyForConversion = false;
+    let lastKeyWasEnter = false;
+
+    inputElement.addEventListener(
+      'input',
+      debounce((event) => {
+        if (
+          !isComposing &&
+          !isEnterKeyForConversion &&
+          event.target.value.trim() !== ''
+        ) {
+          handleInput(event);
+        }
+      }, 300)
+    );
+
+    inputElement.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        handleKeyboardNavigation(event);
+      } else if (
+        event.key === 'Enter' &&
+        !isComposing &&
+        !isEnterKeyForConversion
+      ) {
+        event.preventDefault();
+        if (suggestBoxContainer.style.display === 'block') {
+          const items =
+            suggestBoxContainer.querySelectorAll('.suggestion-item');
+          if (selectedIndex >= 0 && items[selectedIndex]) {
+            items[selectedIndex].click();
+          }
+        }
+      } else if (event.key === ' ') {
+        clearSuggestBox();
+      }
+
+      if (event.key === 'Enter') {
+        lastKeyWasEnter = true;
+      }
+    });
+
+    inputElement.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        lastKeyWasEnter = false;
+      }
+    });
+
     inputElement.addEventListener('compositionstart', () => {
       isComposing = true;
+      isEnterKeyForConversion = true;
     });
+
     inputElement.addEventListener('compositionend', () => {
       isComposing = false;
+      setTimeout(() => {
+        isEnterKeyForConversion = false;
+        if (
+          inputElement.value.trim() !== '' &&
+          !isFullWidthNumeric(inputElement.value) &&
+          !lastKeyWasEnter
+        ) {
+          handleInput();
+        }
+      }, 200);
     });
+
     inputElement.addEventListener('focus', handleFocus);
     document.addEventListener('click', handleClickOutside);
+  }
+
+  /**
+   * Checks if the input string contains only full-width numeric characters.
+   * @param {string} value - The input value to check.
+   * @returns {boolean} - True if the input contains only full-width numeric characters, false otherwise.
+   */
+  function isFullWidthNumeric(value) {
+    const fullWidthNumericPattern = /^[０-９]+$/;
+    return fullWidthNumericPattern.test(value);
   }
 
   /**
@@ -131,30 +197,53 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @param {Event} event - The input event.
    */
   function handleInput(event) {
-    originalInputValue = event.target.value;
-    const searchValue = normalizeString(event.target.value.trim());
+    if (isComposing) return;
+
+    const lang = document.documentElement.lang;
+    originalInputValue = event ? event.target.value : inputElement.value;
+    const searchValue = normalizeString(originalInputValue.trim());
 
     if (searchValue.length < 2) {
       clearSuggestBox();
       return;
     }
 
+    const isNumericInput = /^\d+$/.test(searchValue);
+
     currentKeywords = searchValue
       .split(/\s+/)
       .filter((keyword) => keyword !== '');
-    localResults = searchInLocalData(diseases, currentKeywords);
 
-    if (localResults.length === 0 && api_url) {
-      fetchFromAPI(searchValue).then((results) => {
-        if (results.length === 0 && includeNoMatch) {
-          displayResults([], true);
-        } else {
-          apiResults = results;
-          displayResults(results, true);
-        }
-      });
+    if (isNumericInput) {
+      localResults = searchInLocalData(diseases, currentKeywords, true);
+
+      if (localResults.length === 0 && api_url) {
+        fetchFromAPI(searchValue).then((results) => {
+          if (results.length === 0 && includeNoMatch) {
+            displayResults([], true, true);
+          } else {
+            apiResults = results;
+            displayResults(results, true, true);
+          }
+        });
+      } else {
+        displayResults(localResults, false, true);
+      }
     } else {
-      displayResults(localResults);
+      localResults = searchInLocalData(diseases, currentKeywords);
+
+      if (localResults.length === 0 && api_url) {
+        fetchFromAPI(searchValue).then((results) => {
+          if (results.length === 0 && includeNoMatch) {
+            displayResults([], true);
+          } else {
+            apiResults = results;
+            displayResults(results, true);
+          }
+        });
+      } else {
+        displayResults(localResults);
+      }
     }
   }
 
@@ -163,10 +252,14 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @param {Array} results - The list of keyword suggestions.
    * @param {boolean} [fromAPI=false] - Whether the results are from an API call.
    */
-  function displayResults(results, fromAPI = false) {
+  function displayResults(results, fromAPI = false, onlyNumeric = false) {
     let hitCount = fromAPI ? 0 : results.length;
     let suggestionsHtml = '';
-    const isEng = isEnglish(currentKeywords.join(' '));
+    const lang = document.documentElement.lang;
+    let isEng = isEnglish(currentKeywords.join(' '));
+    if (onlyNumeric) {
+      isEng = lang === 'en' ? true : false;
+    }
 
     if (includeNoMatch) {
       suggestionsHtml += createKeywordSuggestion();
@@ -197,6 +290,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @returns {string} - The HTML string for the keyword suggestion item.
    */
   function createKeywordSuggestion() {
+    const lang = document.documentElement.lang;
     const keyword = currentKeywords.join(' ');
     const displayText =
       lang === 'ja'
@@ -222,7 +316,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   function createSuggestionItem(disease, index, isEng, suggestionsHtml) {
     const mainLabel = isEng ? disease.label_en : disease.label_ja;
     const synonyms = isEng ? disease.synonym_en : disease.synonym_ja;
-    const highlightedID = highlightMatch(disease.ID, currentKeywords);
+    const highlightedID = highlightMatch(disease.id, currentKeywords);
     const highlightedLabel = highlightMatch(mainLabel, currentKeywords);
     const highlightedSynonyms = synonyms
       ? highlightMatch(synonyms, currentKeywords)
@@ -239,7 +333,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
     return `
     <li class="suggestion-item ${
       index === 0 && !suggestionsHtml ? '-selected' : ''
-    }" data-id="${disease.ID}">
+    }" data-id="${disease.id}">
       <span class="label-id">${highlightedID}</span>
       <div class="label-container">
         <span class="main-name">${highlightedLabel}</span>
@@ -259,6 +353,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @returns {string} - The HTML string for the hit count text.
    */
   function createHitCountText(fromAPI, hitCount) {
+    const lang = document.documentElement.lang;
     return fromAPI
       ? lang === 'ja'
         ? `ヒット件数 [0] <span class="suggestion-hint">もしかして:</span>`
@@ -364,7 +459,7 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
         let labelInfo;
         if (isNoMatch) {
           labelInfo = {
-            ID: '',
+            id: '',
             label_en: '',
             label_ja: '',
             keyword: originalInputValue,
@@ -373,8 +468,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
           const itemId = item.getAttribute('data-id');
           const diseaseInfo =
             localResults.length === 0
-              ? apiResults.find((disease) => disease.ID === itemId)
-              : diseases.find((disease) => disease.ID === itemId);
+              ? apiResults.find((disease) => disease.id === itemId)
+              : diseases.find((disease) => disease.id === itemId);
 
           const { synonym_en, synonym_ja, ...restDiseaseInfo } = diseaseInfo;
 
@@ -416,12 +511,19 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
   }
 
   /**
-   * Determines whether the input string is in English.
+   * Determines whether the input string should be treated as English based on the content and the language setting.
    * @param {string} str - The input string.
-   * @returns {boolean} - True if the input string is in English, otherwise false.
+   * @returns {boolean} - True if the input string should be treated as English, otherwise false.
    */
   function isEnglish(str) {
-    const englishPattern = /^[A-Za-z0-9\s]+$/;
+    const lang = document.documentElement.lang;
+    const isNumericOnly = /^\d+(\s+\d+)*$/.test(str);
+
+    if (isNumericOnly) {
+      return lang === 'en';
+    }
+
+    const englishPattern = /^[A-Za-z0-9\s:]+$/;
     return englishPattern.test(normalizeString(str));
   }
 
@@ -431,15 +533,19 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
    * @param {Array} keywords - The array of input keywords.
    * @returns {Array} - The array of matching keyword objects.
    */
-  function searchInLocalData(diseases, keywords) {
-    const isEng = isEnglish(keywords.join(' '));
+  function searchInLocalData(diseases, keywords, onlyNumeric = false) {
+    const lang = document.documentElement.lang;
+    let isEng = isEnglish(keywords.join(' '));
+    if (onlyNumeric) {
+      isEng = lang === 'en' ? true : false;
+    }
     return diseases.filter((disease) => {
       return keywords.every((keyword) => {
         const lowerKeyword = normalizeString(keyword);
         if (isEng) {
           return (
-            (disease.ID &&
-              normalizeString(disease.ID).includes(lowerKeyword)) ||
+            (disease.id &&
+              normalizeString(disease.id).includes(lowerKeyword)) ||
             (disease.label_en &&
               normalizeString(disease.label_en).includes(lowerKeyword)) ||
             (disease.synonym_en &&
@@ -447,8 +553,8 @@ export function smartTextBox(input_box_id, data_path, options = {}) {
           );
         } else {
           return (
-            (disease.ID &&
-              normalizeString(disease.ID).includes(lowerKeyword)) ||
+            (disease.id &&
+              normalizeString(disease.id).includes(lowerKeyword)) ||
             (disease.label_ja &&
               normalizeString(disease.label_ja).includes(lowerKeyword)) ||
             (disease.synonym_ja &&
