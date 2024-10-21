@@ -58,11 +58,7 @@ export function smartBox(input_box_id, data_path, options = {}) {
     inputElement.addEventListener(
       'input',
       debounce((event) => {
-        if (
-          !isComposing &&
-          !isEnterKeyForConversion &&
-          event.target.value.trim() !== ''
-        ) {
+        if (!isComposing && !isEnterKeyForConversion) {
           handleInput(event);
         }
       }, 300)
