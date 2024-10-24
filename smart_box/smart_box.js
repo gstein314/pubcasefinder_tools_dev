@@ -189,6 +189,25 @@ export function smartBox(input_box_id, data_path, options = {}) {
   }
 
   /**
+   * Checks if the input string contains any full-width characters.
+   * @param {string} str - The input string to check.
+   * @returns {boolean} - True if the string contains any full-width characters, false otherwise.
+   */
+  function isFullWidth(str) {
+    return [...str].some((char) => {
+      const code = char.charCodeAt(0);
+      return (
+        (code >= 0x3000 && code <= 0x303f) || // Japanese punctuation
+        (code >= 0x3040 && code <= 0x309f) || // Hiragana
+        (code >= 0x30a0 && code <= 0x30ff) || // Katakana
+        (code >= 0xff01 && code <= 0xff60) || // Full-width forms
+        (code >= 0xffe0 && code <= 0xffe6) || // Full-width symbols
+        (code >= 0x4e00 && code <= 0x9faf) // CJK Unified Ideographs (kanji)
+      );
+    });
+  }
+
+  /**
    * Handles input events from the input element, normalizes the input value, and displays keyword suggestions.
    * @param {Event} event - The input event.
    */
@@ -197,14 +216,25 @@ export function smartBox(input_box_id, data_path, options = {}) {
 
     const lang = document.documentElement.lang;
     originalInputValue = event ? event.target.value : inputElement.value;
-    const searchValue = normalizeString(originalInputValue.trim());
+    const trimmedInputValue = originalInputValue.trim();
+    const containsFullWidth = isFullWidth(trimmedInputValue);
+    const searchValue = normalizeString(trimmedInputValue);
 
-    if (searchValue.length < 2) {
+    const isNumericInput = /^[0-9０-９]+$/.test(searchValue);
+
+    let minLength;
+    if (containsFullWidth) {
+      // Half-width characters (numerical values)
+      minLength = 1;
+    } else {
+      // Full-width characters (numeric)
+      minLength = 2;
+    }
+
+    if (searchValue.length < minLength) {
       clearSuggestBox();
       return;
     }
-
-    const isNumericInput = /^\d+$/.test(searchValue);
 
     currentKeywords = searchValue
       .split(/\s+/)
