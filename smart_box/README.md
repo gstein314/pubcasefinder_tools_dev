@@ -20,7 +20,8 @@ cd smart_box
 - `data_path`: TSV ファイルのパス。必須です。
 - `[options={}]`: 追加設定を指定するオプションオブジェクト。省略可能です。
   - `[options.api_url='']`: もしかして検索をするための API の URL（オプション）。
-  - `[options.includeNoMatch=false]`: キーワードが見つからない場合にキーワード自体の選択欄を含めるかどうか（オプション）。
+  - `[options.include_no_match=false]`: キーワードが見つからない場合にキーワード自体の選択欄を含めるかどうか（オプション）。
+  - `[options.max_results]`: サジェストボックスに表示する最大の候補数（オプション）。
 
 2. もしかして検索（API）をローカルで試したい場合は、API サーバーを起動してください。デモ用に作成した（server.js）は Node.js と Express を使用しています。簡易的な API であるため、実際のプロジェクトで使用する場合は適切な API を用意してください。
 
@@ -110,7 +111,8 @@ input_box_id (string): 入力ボックスの要素 ID。
 data_path (string): キーワードデータを含む TSV ファイルのパス。
 options (object, 任意):
 api_url (string): 追加のキーワード候補を取得するための API の URL。
-includeNoMatch (boolean): キーワード自体の選択欄をサジェストボックスに含めるかどうか。
+include_no_match (boolean): キーワード自体の選択欄をサジェストボックスに含めるかどうか。
+max_results (number): サジェストボックスに表示する最大の候補数。
 
 ##### 機能
 
@@ -164,7 +166,7 @@ smartBox('inputBoxID', 'path/to/keywords.tsv', {
 
 ```javascript
 smartBox('inputBoxID', 'path/to/keywords.tsv', {
-  includeNoMatch: true,
+  include_no_match: true,
 });
 ```
 
@@ -173,7 +175,15 @@ smartBox('inputBoxID', 'path/to/keywords.tsv', {
 ```javascript
 smartBox('inputBoxID', 'path/to/keywords.tsv', {
   api_url: 'https://api.example.com/keywords',
-  includeNoMatch: true,
+  include_no_match: true,
+});
+```
+
+5. サジェストボックスに表示する最大の候補数を指定する場合（最大が 5 件の場合）
+
+```javascript
+smartBox('inputBoxID', 'path/to/keywords.tsv', {
+  max_results: 5,
 });
 ```
 

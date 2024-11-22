@@ -1,14 +1,15 @@
 import { smartBox } from '../../smart_box.js';
 
-// API（もしかして検索）あり、キーワード選択欄なし
+// API（もしかして検索）あり、キーワード選択欄なし、最大表示数指定：5
 smartBox('NANDO', './tsv/NANDO_sample.tsv', {
   api_url: 'http://localhost:5555/moshikashite_test_api?text=',
+  max_results: 5,
 });
 
 // API（もしかして検索）あり、キーワード選択欄あり
 smartBox('MONDO', './tsv/mondo_sample.tsv', {
   api_url: 'http://localhost:5555/moshikashite_test_api?text=',
-  includeNoMatch: true,
+  include_no_match: true,
 });
 
 // API（もしかして検索）なし、キーワード選択欄なし
@@ -32,7 +33,7 @@ document.addEventListener('selectedLabel', function (event) {
   }
 });
 
-// デモ用
+// デモ用（言語切替）
 window.switchLanguage = function (lang) {
   const htmlElement = document.documentElement;
   htmlElement.lang = lang;
