@@ -1,16 +1,36 @@
+class SmartBoxComponent extends HTMLElement {
+  connectedCallback() {
+    const smartBoxId = this.getAttribute('smart-box-id');
+    const dataPath = this.getAttribute('data-path');
+    const placeholder = this.getAttribute('placeholder') || 'Search...';
+    const autocomplete = this.getAttribute('autocomplete') || 'off';
+    const options = JSON.parse(this.getAttribute('options') || '{}');
+
+    this.innerHTML = `
+      <div class="smart-box-container">
+        <input type="text" id="${smartBoxId}" class="smart-box-input" autocomplete="${autocomplete}" placeholder="${placeholder}">
+      </div>
+    `;
+
+    smartBox(smartBoxId, dataPath, options);
+  }
+}
+
+customElements.define('smart-box', SmartBoxComponent);
+
 /**
  * Suggests keywords based on input from a specified text box.
  *
- * @param {string} input_box_id - The ID of the input box element.
+ * @param {string} smart_box_id - The ID of the input box element.
  * @param {string} data_path - The path to the TSV file containing keyword data.
  * @param {Object} [options={}] - An options object to specify additional settings.
  * @param {string} [options.api_url=''] - The URL of the API to fetch additional keyword suggestions (optional).
  * @param {boolean} [options.include_no_match=false] - Whether to include a selection field for the keyword itself in the suggestion box (optional).
  * @param {number} [options.max_results] - The maximum number of suggestions to display (optional).
  */
-export function smartBox(input_box_id, data_path, options = {}) {
-  if (!input_box_id) {
-    console.error('Error in smartBox: Input box id is required.');
+function smartBox(smart_box_id, data_path, options = {}) {
+  if (!smart_box_id) {
+    console.error('Error in smartBox: Smart box id is required.');
     return;
   }
 
@@ -26,9 +46,9 @@ export function smartBox(input_box_id, data_path, options = {}) {
   let currentKeywords = [];
   let originalInputValue = '';
   let isComposing = false;
-  const inputElement = document.getElementById(input_box_id);
+  const inputElement = document.getElementById(smart_box_id);
   let suggestBoxContainer = document.getElementById(
-    `${input_box_id}_suggestBox`
+    `${smart_box_id}_suggestBox`
   );
   let localResults = [];
   let apiResults = [];
@@ -536,8 +556,8 @@ export function smartBox(input_box_id, data_path, options = {}) {
           };
         }
 
-        const customEvent = new CustomEvent('selectedLabel', {
-          detail: { inputBoxId: input_box_id, labelInfo: labelInfo },
+        const customEvent = new CustomEvent('selectedSmartBoxLabel', {
+          detail: { smartBoxId: smart_box_id, labelInfo: labelInfo },
         });
         document.dispatchEvent(customEvent);
         clearSuggestBox();
@@ -551,11 +571,35 @@ export function smartBox(input_box_id, data_path, options = {}) {
    * @returns {Array} - The array of parsed keyword objects.
    */
   function parseTSVData(tsvData) {
-    return Papa.parse(tsvData, {
-      columns: true,
-      delimiter: '\t',
-      header: true,
-    }).data;
+    const lines = tsvData.trim().split('\n');
+    if (lines.length === 0) return [];
+
+    const headers = lines[0].split('\t').map((header) => header.trim());
+
+    return lines.slice(1).map((line) => {
+      const placeholders = [];
+      const lineWithPlaceholders = line.replace(
+        /"([^"]*)"/g,
+        (match, content) => {
+          placeholders.push(content);
+          return `__PLACEHOLDER${placeholders.length - 1}__`;
+        }
+      );
+
+      const values = lineWithPlaceholders.split('\t');
+
+      return headers.reduce((obj, header, index) => {
+        let value = values[index] ? values[index].trim() : '';
+
+        value = value.replace(
+          /__PLACEHOLDER(\d+)__/g,
+          (match, index) => placeholders[parseInt(index)]
+        );
+
+        obj[header] = value;
+        return obj;
+      }, {});
+    });
   }
 
   /**
@@ -585,10 +629,11 @@ export function smartBox(input_box_id, data_path, options = {}) {
   }
 
   /**
-   * Searches for matching keywords in the local data based on the input keywords.
-   * @param {Array} diseases - The array of keyword objects.
-   * @param {Array} keywords - The array of input keywords.
-   * @returns {Array} - The array of matching keyword objects.
+   * Search based on partial match or similarity and return results sorted by score
+   * @param {Array} diseases - Array of data loaded from TSV
+   * @param {Array} keywords - Array of user input keywords
+   * @param {boolean} [onlyNumeric=false] - Used for numeric-only cases (following original implementation)
+   * @returns {Array} Matching results sorted by descending score
    */
   function searchInLocalData(diseases, keywords, onlyNumeric = false) {
     const lang = document.documentElement.lang;
@@ -596,30 +641,48 @@ export function smartBox(input_box_id, data_path, options = {}) {
     if (onlyNumeric) {
       isEng = lang === 'en' ? true : false;
     }
-    return diseases.filter((disease) => {
-      return keywords.every((keyword) => {
+
+    const matchedResults = [];
+
+    for (const disease of diseases) {
+      let totalScore = 0;
+      let allKeywordsMatched = true;
+
+      for (const keyword of keywords) {
         const lowerKeyword = normalizeString(keyword);
-        if (isEng) {
-          return (
-            (disease.id &&
-              normalizeString(disease.id).includes(lowerKeyword)) ||
-            (disease.label_en &&
-              normalizeString(disease.label_en).includes(lowerKeyword)) ||
-            (disease.synonym_en &&
-              normalizeString(disease.synonym_en).includes(lowerKeyword))
-          );
-        } else {
-          return (
-            (disease.id &&
-              normalizeString(disease.id).includes(lowerKeyword)) ||
-            (disease.label_ja &&
-              normalizeString(disease.label_ja).includes(lowerKeyword)) ||
-            (disease.synonym_ja &&
-              normalizeString(disease.synonym_ja).includes(lowerKeyword))
-          );
+        const fields = isEng
+          ? [disease.id, disease.label_en, disease.synonym_en]
+          : [disease.id, disease.label_ja, disease.synonym_ja];
+
+        let bestFieldScore = 0;
+        for (const field of fields) {
+          if (!field) continue;
+          const normalizedField = normalizeString(field);
+          if (normalizedField.includes(lowerKeyword)) {
+            const sim = calculateSimilarity(normalizedField, lowerKeyword);
+            bestFieldScore = sim;
+          }
         }
-      });
-    });
+
+        if (bestFieldScore < 0.01) {
+          allKeywordsMatched = false;
+          break;
+        } else {
+          totalScore += bestFieldScore;
+        }
+      }
+
+      if (allKeywordsMatched) {
+        matchedResults.push({
+          ...disease,
+          score: totalScore,
+        });
+      }
+    }
+
+    matchedResults.sort((a, b) => b.score - a.score);
+
+    return matchedResults;
   }
 
   /**
@@ -655,4 +718,52 @@ export function smartBox(input_box_id, data_path, options = {}) {
       clearSuggestBox();
     }
   }
+}
+
+/**
+ * Calculate Levenshtein distance
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+function calculateLevenshteinDistance(a, b) {
+  const dp = Array.from({ length: a.length + 1 }, () =>
+    new Array(b.length + 1).fill(0)
+  );
+
+  // Initialize
+  for (let i = 0; i <= a.length; i++) {
+    dp[i][0] = i;
+  }
+  for (let j = 0; j <= b.length; j++) {
+    dp[0][j] = j;
+  }
+
+  // Calculate distance using DP
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1, // Delete
+        dp[i][j - 1] + 1, // Insert
+        dp[i - 1][j - 1] + cost // Replace
+      );
+    }
+  }
+
+  return dp[a.length][b.length];
+}
+
+/**
+ * Calculate similarity (0-1) from Levenshtein distance
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+function calculateSimilarity(a, b) {
+  if (!a && !b) return 1;
+  if (!a || !b) return 0;
+  const distance = calculateLevenshteinDistance(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return 1 - distance / maxLen;
 }
