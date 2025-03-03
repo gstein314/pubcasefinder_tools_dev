@@ -1,0 +1,425 @@
+.smart-box-demo {
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.smart-box-demo .header {
+  border-bottom: 1px solid #eee;
+  background-color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.smart-box-demo .header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.smart-box-demo .header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.smart-box-demo .language-switcher {
+  text-align: right;
+}
+
+.smart-box-demo .language-switcher a {
+  text-decoration: none;
+  color: #000;
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 15px;
+  min-width: 16px;
+  display: inline-block;
+  text-align: center;
+}
+
+.smart-box-demo .language-switcher a.active {
+  color: #635ccd;
+  background: #eff2fe;
+}
+
+.smart-box-demo .main-wrapper {
+  margin-top: 60px;
+  background-color: #f9fafb;
+  width: 100%;
+  padding: 40px 0;
+}
+
+.smart-box-demo .main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.smart-box-demo .parameters-section {
+  display: flex;
+  gap: 20px;
+}
+
+.smart-box-demo .parameters-section .demo-section {
+  flex: 1;
+}
+
+.smart-box-demo .demo-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.smart-box-demo .section-title {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.smart-box-demo .section-title i {
+  color: #635ccd;
+  width: 20px;
+}
+
+.smart-box-demo .data-source-options {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  align-items: center;
+}
+
+.smart-box-demo .data-source-options > span:first-child {
+  color: #666;
+  font-size: 14px;
+}
+
+.smart-box-demo .data-source-option {
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #635ccd;
+  background: #eff2fe;
+}
+
+.smart-box-demo .data-source-option.active {
+  background: #34508a;
+  color: white;
+}
+
+.smart-box-demo .upload-section {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.smart-box-demo .upload-tab {
+  padding: 8px 16px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  color: #6e84bf;
+}
+
+.smart-box-demo .upload-tab.active {
+  border-bottom-color: #34508a;
+  color: #34508a;
+}
+
+.smart-box-demo .upload-area {
+  border: 2px dashed #ccc;
+  padding: 40px;
+  text-align: center;
+  color: #666;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.smart-box-demo .upload-area i {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.smart-box-demo .option-toggle {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  flex-direction: column;
+}
+
+.smart-box-demo .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 32px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+  cursor: pointer;
+}
+
+.smart-box-demo .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.smart-box-demo .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* ONのテキスト */
+.smart-box-demo .toggle-switch .slider span.on-text {
+  position: absolute;
+  left: 12px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* OFFのテキスト */
+.smart-box-demo .toggle-switch .slider span.off-text {
+  position: absolute;
+  right: 12px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* スライダーボタン */
+.smart-box-demo .toggle-switch .slider:before {
+  content: '';
+  position: absolute;
+  right: 3px;
+  background: #eff2fe;
+  height: 26px;
+  width: 48px;
+  border-radius: 4px;
+  transition: 0.4s;
+  box-shadow: none;
+}
+
+/* チェック時のスライダーボタンの位置 */
+.smart-box-demo .toggle-switch input:checked + .slider:before {
+  transform: translateX(-46px);
+  background: #eff2fe;
+}
+
+/* チェック時のテキストの色 */
+.smart-box-demo .toggle-switch input:checked ~ .slider .on-text {
+  color: #635ccd;
+}
+
+.smart-box-demo .toggle-switch input:not(:checked) ~ .slider .off-text {
+  color: #635ccd;
+}
+
+.smart-box-demo .toggle-switch::before,
+.smart-box-demo .toggle-switch::after {
+  content: none;
+}
+
+.smart-box-demo .code-section {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 40px;
+  border-radius: 4px;
+  margin: 20px 0;
+  position: relative;
+}
+
+.smart-box-demo .code-section pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+.smart-box-demo .code-section code {
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.smart-box-demo .copy-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.smart-box-demo .smart-box-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.smart-box-demo .smart-box-input::placeholder {
+  color: #999;
+}
+
+.smart-box-demo label {
+  display: block;
+  margin-top: 15px;
+  color: #333;
+}
+
+.smart-box-demo .placeholder-message {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.smart-box-demo .placeholder-message.error {
+  text-align: center;
+  padding: 20px;
+  color: #dc3545;
+  background: #fff3f5;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* ツールチップのスタイル */
+.smart-box-demo .info-icon {
+  color: #635ccd;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+
+.smart-box-demo .info-tooltip {
+  visibility: hidden;
+  position: absolute;
+  left: 24px;
+  top: 0;
+  transform: translateY(-25%);
+  background: #fff;
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+  z-index: 100;
+  white-space: pre;
+  cursor: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.smart-box-demo .info-tooltip .tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 8px;
+  min-height: 24px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.smart-box-demo .info-tooltip .tooltip-header p {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1;
+  flex: 1;
+  padding-right: 8px;
+}
+
+.smart-box-demo .info-tooltip pre.code-example {
+  background: #f5f7fa;
+  padding: 12px;
+  border-radius: 4px;
+  margin: 0;
+  font-family: monospace;
+  font-size: 14px;
+  overflow-x: auto;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+/* リスト部分 */
+.smart-box-demo .info-tooltip .description {
+  margin-top: 8px;
+  padding-left: 16px;
+}
+
+.smart-box-demo .info-tooltip .description li {
+  margin: 4px 0;
+}
+
+/* 矢印 */
+.smart-box-demo .info-tooltip::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #fff transparent transparent;
+}
+
+/* 画面右端での表示調整 */
+@media (max-width: 800px) {
+  .smart-box-demo .info-tooltip {
+    left: auto;
+    right: 24px;
+    transform: translateY(-25%);
+  }
+
+  .smart-box-demo .info-tooltip::before {
+    left: auto;
+    right: -6px;
+    border-color: transparent transparent transparent #fff;
+  }
+}
+
+/* 閉じるボタンのスタイル */
+.smart-box-demo .info-tooltip .close-button {
+  color: #999;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.smart-box-demo .info-tooltip .close-button:hover {
+  color: #635ccd;
+  background: #f5f7fa;
+}

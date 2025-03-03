@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Box Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="demo/style.css">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body class="smart-box-demo">
+  <header class="header">
+    <div class="header-content">
+      <h1>Smart Box Demo</h1>
+      <div class="language-switcher">
+        <a href="#" class="active">en</a>
+        <a href="#">ja</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-wrapper">
+    <div class="main-content">
+      <div class="parameters-section">
+        <div class="demo-section">
+          <h2 class="section-title">
+            <i class="fa-regular fa-clipboard"></i>Required Parameters
+          </h2>
+
+          <div>
+            <label>Smart Box ID</label>
+            <input type="text" placeholder="SampleID" class="smart-box-input">
+          </div>
+
+          <div>
+            <label>
+              TSV Data Source
+              <i class="fa-regular fa-circle-question info-icon">
+                <span class="info-tooltip">
+                  <div class="tooltip-header">
+                    <p>TSV file example</p>
+                    <i class="fa-solid fa-xmark close-button"></i>
+                  </div>
+                  <pre class="code-example">id label_en synonym_en label_ja synonym_ja
+DEMO:0000001 Disease A Alt name for A 病気A 病気Aの別名
+DEMO:0000002 Disease B Alt name for B 病気B 病気Bの別名</pre>
+                </span>
+              </i>
+            </label>
+            <div class="data-source-options">
+              <span>Sample</span>
+              <span class="data-source-option">NANDO</span>
+              <span class="data-source-option">OMIM/Orphanet</span>
+              <span class="data-source-option">ICD-10</span>
+            </div>
+          </div>
+
+          <div class="upload-section">
+            <span class="upload-tab active">File Upload</span>
+            <span class="upload-tab">Data URL</span>
+          </div>
+
+          <div class="upload-area">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            <p>Click to upload or drag and drop<br>TSV file only</p>
+          </div>
+        </div>
+
+        <div class="demo-section">
+          <h2 class="section-title">
+            <i class="fa-solid fa-gear"></i>Option
+          </h2>
+
+          <div>
+            <label>
+              Moshikashite API URL
+              <i class="fa-regular fa-circle-question info-icon">
+                <span class="info-tooltip">
+                  <div class="tooltip-header">
+                    <p>Moshikashite API response format</p>
+                    <i class="fa-solid fa-xmark close-button"></i>
+                  </div>
+                  <pre class="code-example">[
+  {
+    "id": "DEMO:0000001",
+    "label_en": "Disease A",
+    "synonym_en": "Alternative name for A",
+    "label_ja": "病気A",
+    "synonym_ja": "病気Aの別名"
+  },
+  {
+    "id": "DEMO:0000002",
+    "label_en": "Disease B",
+    "synonym_en": "Alternative name for B",
+    "label_ja": "病気B",
+    "synonym_ja": "病気Bの別名"
+  }
+]</pre>
+                </span>
+              </i>
+            </label>
+            <input type="text" placeholder="https://example.com/moshikashite-api?text=" class="smart-box-input">
+          </div>
+
+          <div class="option-toggle">
+            <label>Include keyword</label>
+            <span class="toggle-switch">
+              <input type="checkbox" id="includeKeyword">
+              <span class="slider">
+                <span class="on-text">ON</span>
+                <span class="off-text">OFF</span>
+              </span>
+            </span>
+          </div>
+
+          <div>
+            <label>Maximum Results</label>
+            <input type="number" min="1" placeholder="Unlimited" class="smart-box-input">
+          </div>
+
+          <div>
+            <label>Placeholder</label>
+            <input type="text" placeholder="Search..." class="smart-box-input">
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-magnifying-glass"></i>Smart Box
+        </h2>
+        <input type="text" placeholder="Search..." class="smart-box-input">
+      </div>
+
+      <div class="demo-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-code"></i>Code
+        </h2>
+        <div class="code-section">
+          <button class="copy-button">
+            <i class="fa-regular fa-clipboard"></i> Copy to clipboard
+          </button>
+          <pre><code>Please select a data source or upload a TSV file</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+  <script type="module" src="smart_box.js"></script>
+</body>
+
+</html>
