@@ -1,7 +1,7 @@
 {
   "name": "smart_box",
   "version": "1.0.0",
-  "description": "Smart Box",
+  "description": "SmartBox",
   "main": "smart_box.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

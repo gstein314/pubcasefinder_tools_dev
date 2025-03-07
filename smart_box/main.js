@@ -23,7 +23,7 @@ class SmartBoxDemo {
   }
 
   initializeEventListeners() {
-    // Smart Box ID の入力監視
+    // SmartBox ID の入力監視
     const smartBoxIdInput = document.querySelector(
       'input[placeholder="SampleID"]'
     );
@@ -147,7 +147,7 @@ class SmartBoxDemo {
       });
     });
 
-    // Smart Box設定の変更を監視
+    // SmartBox設定の変更を監視
     this.watchConfigChanges();
 
     // ツールチップの制御を追加
@@ -330,7 +330,7 @@ class SmartBoxDemo {
   }
 
   updateConfigFromInputs() {
-    // Smart Box ID
+    // SmartBox ID
     const smartBoxIdInput = document.querySelector(
       'input[placeholder="SampleID"]'
     );
@@ -389,14 +389,14 @@ class SmartBoxDemo {
     );
     if (!smartBoxContainer) return;
 
-    // Smart Box IDが入力されていない場合はエラーメッセージを表示
+    // SmartBox IDが入力されていない場合はエラーメッセージを表示
     if (!this.currentConfig.smartBoxId) {
       smartBoxContainer.innerHTML = `
         <h2 class="section-title">
-          <i class="fa-solid fa-magnifying-glass"></i>Smart Box
+          <i class="fa-solid fa-magnifying-glass"></i>SmartBox
         </h2>
         <div class="placeholder-message error">
-          Please enter Smart Box ID
+          Please enter SmartBox ID
         </div>
       `;
       this.updateCodeSection();
@@ -415,7 +415,7 @@ class SmartBoxDemo {
     if (!this.currentConfig.dataPath) {
       smartBoxContainer.innerHTML = `
         <h2 class="section-title">
-          <i class="fa-solid fa-magnifying-glass"></i>Smart Box
+          <i class="fa-solid fa-magnifying-glass"></i>SmartBox
         </h2>
         <div class="placeholder-message error">
           Please select a data source or upload a TSV file
@@ -427,7 +427,7 @@ class SmartBoxDemo {
 
     smartBoxContainer.innerHTML = `
       <h2 class="section-title">
-        <i class="fa-solid fa-magnifying-glass"></i>Smart Box
+        <i class="fa-solid fa-magnifying-glass"></i>SmartBox
       </h2>
       <smart-box 
         smart-box-id="${this.currentConfig.smartBoxId || 'demo'}"
@@ -459,9 +459,9 @@ class SmartBoxDemo {
   }
 
   generateCode() {
-    // Smart Box IDが入力されていない場合はエラーメッセージを表示
+    // SmartBox IDが入力されていない場合はエラーメッセージを表示
     if (!this.currentConfig.smartBoxId) {
-      return 'Please enter Smart Box ID';
+      return 'Please enter SmartBox ID';
     }
 
     // データソースが選択されていない場合はプレースホルダーを表示
@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
   new SmartBoxDemo();
 });
 
-// Smart Boxのイベントリスナー
+// SmartBoxのイベントリスナー
 document.addEventListener('selectedSmartBoxLabel', function (event) {
   const smartBoxId = event.detail.smartBoxId;
   const labelInfo = event.detail.labelInfo;

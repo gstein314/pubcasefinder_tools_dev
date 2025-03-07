@@ -30,7 +30,7 @@ customElements.define('smart-box', SmartBoxComponent);
  */
 function smartBox(smart_box_id, data_path, options = {}) {
   if (!smart_box_id) {
-    console.error('Error in smartBox: Smart box id is required.');
+    console.error('Error in smartBox: SmartBox id is required.');
     return;
   }
 
